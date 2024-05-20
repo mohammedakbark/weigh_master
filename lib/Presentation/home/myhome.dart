@@ -27,7 +27,7 @@ class _MyhomeState extends State<Myhome> {
     cart = Cart(); // Create an instance of the Cart class
     _widgetOptions = <Widget>[
       const MyHomeDetails(),
-      CartPage(cart: cart),
+      CartPage(),
       const Notificationn(),
       Setting(),
     ];

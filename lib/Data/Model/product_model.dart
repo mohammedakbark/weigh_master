@@ -3,7 +3,7 @@ class ProductModel {
   String name;
   String discription;
   String type;
-  double rate;
+  String rate;
   String image;
 
   ProductModel(

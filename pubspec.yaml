@@ -45,6 +45,7 @@ dependencies:
   google_fonts: ^6.2.1
   provider: ^6.1.2
   firebase_database: ^10.5.5
+  upi_india: ^3.0.1
 
 dev_dependencies:
   flutter_test:

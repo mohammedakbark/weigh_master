@@ -140,7 +140,8 @@ class RentPage extends StatelessWidget {
                                     height: 100.0,
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
-                                        image: AssetImage(product.imageUrl),
+                                        image:
+                                            NetworkImage(data[index]["image"]),
                                         fit: BoxFit.cover,
                                       ),
                                       borderRadius: BorderRadius.circular(10.0),

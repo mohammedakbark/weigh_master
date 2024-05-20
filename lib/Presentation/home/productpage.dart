@@ -1,12 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:weigh_master/Data/Model/cartmodel.dart';
+import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/Model/product_model.dart';
 import 'package:weigh_master/Presentation/cart/cart.dart';
+import 'package:weigh_master/Presentation/cart/proceed_payment.dart';
 import 'package:weigh_master/Presentation/home/buy.dart';
 
 class ProductBuyingPage extends StatefulWidget {
-  final Product product;
+  final ProductModel productModel;
   final Cart cart = Cart();
 
-  ProductBuyingPage({Key? key, required this.product}) : super(key: key);
+  ProductBuyingPage({Key? key, required this.productModel}) : super(key: key);
 
   @override
   _ProductBuyingPageState createState() => _ProductBuyingPageState();
@@ -29,14 +35,14 @@ class _ProductBuyingPageState extends State<ProductBuyingPage> {
     });
   }
 
-  void addToCart() {
-    widget.cart.addToCart(widget.product);
-    print('Product added to cart: ${widget.product.name}');
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CartPage(cart: widget.cart)),
-    );
-  }
+  // void addToCart() {
+  //   widget.cart.addToCart(widget.product);
+  //   print('Product added to cart: ${widget.product.name}');
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => CartPage(cart: widget.cart)),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +61,8 @@ class _ProductBuyingPageState extends State<ProductBuyingPage> {
                   aspectRatio: 18 / 13,
                   child: Container(
                     color: Colors.grey[300],
-                    child: Image.asset(
-                      widget.product.imageUrl,
+                    child: Image.network(
+                      widget.productModel.image,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -68,14 +74,14 @@ class _ProductBuyingPageState extends State<ProductBuyingPage> {
                       isLiked = !isLiked;
                     });
                     print(
-                        'Product ${widget.product.name} ${isLiked ? 'liked' : 'unliked'}');
+                        'Product ${widget.productModel.name} ${isLiked ? 'liked' : 'unliked'}');
                   },
                 ),
               ],
             ),
             const SizedBox(height: 20.0),
             Text(
-              widget.product.name,
+              widget.productModel.name,
               style:
                   const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
@@ -87,7 +93,7 @@ class _ProductBuyingPageState extends State<ProductBuyingPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      '\$${widget.product.price.toStringAsFixed(2)}',
+                      '\$${widget.productModel.rate}',
                       style: const TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
@@ -120,7 +126,17 @@ class _ProductBuyingPageState extends State<ProductBuyingPage> {
               children: <Widget>[
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: addToCart,
+                    onPressed: () {
+                      log(widget.productModel.id.toString());
+                      DBService()
+                          .addProductToCart(CartModel(
+                              productModel: widget.productModel,
+                              quantity: quantity))
+                          .then((value) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Add to cart successful")));
+                      });
+                    },
                     style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.black),
@@ -139,6 +155,11 @@ class _ProductBuyingPageState extends State<ProductBuyingPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ProceedpayemtPage(
+                                productModel: widget.productModel,
+                                quantity: quantity,
+                              )));
                       print('Product bought');
                     },
                     style: ElevatedButton.styleFrom(

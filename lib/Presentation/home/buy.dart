@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:weigh_master/Data/Model/db_service.dart';
@@ -21,13 +23,13 @@ class Product {
 class Cart {
   List<Product> items = [];
 
-  void addToCart(Product product) {
-    items.add(product);
-  }
+  // void addToCart(Product product) {
+  //   items.add(product);
+  // }
 
-  void removeProduct(Product product) {
-    items.remove(product);
-  }
+  // void removeProduct(Product product) {
+  //   items.remove(product);
+  // }
 }
 
 class BuyPage extends StatelessWidget {
@@ -132,14 +134,23 @@ class BuyPage extends StatelessWidget {
                         itemCount: data.length,
                         itemBuilder: (context, index) {
                           // ProductModel.fromJson(data[index].data() as Map<String ,dynamic>);
-                          final product = products[index];
+                          // final product = products[index];
                           return GestureDetector(
                             onTap: () {
+                              log(data[index]["id"]);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        ProductBuyingPage(product: product)),
+                                    builder: (context) => ProductBuyingPage(
+                                        productModel: ProductModel(
+                                            discription: data[index]
+                                                ["discription"],
+                                            image: data[index]["image"],
+                                            name: data[index]["name"],
+                                            rate:
+                                                data[index]["rate"].toString(),
+                                            type: data[index]["type"],
+                                            id: data[index]["id"]))),
                               );
                             },
                             child: Container(
@@ -154,7 +165,8 @@ class BuyPage extends StatelessWidget {
                                     height: 100.0,
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
-                                        image: AssetImage(product.imageUrl),
+                                        image:
+                                            NetworkImage(data[index]["image"]),
                                         fit: BoxFit.cover,
                                       ),
                                       borderRadius: BorderRadius.circular(10.0),

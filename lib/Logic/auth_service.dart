@@ -22,7 +22,7 @@ class AuthService {
             .addUser(
                 userCredential.user!.uid,
                 UserModel(
-                    // addressModel: AddressModel(),
+                    address: "",
                     email: email,
                     name: name,
                     password: password,

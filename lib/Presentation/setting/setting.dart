@@ -15,7 +15,7 @@ class Setting extends StatelessWidget {
           _buildListItem(Icons.account_circle, 'Edit Profile', () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ProfileBody()),
+              MaterialPageRoute(builder: (context) => ProfilePage()),
             );
           }),
           _buildSectionTitle('Warranty & Service'),
