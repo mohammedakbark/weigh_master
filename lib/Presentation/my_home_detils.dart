@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:weigh_master/Presentation/home/buy.dart';
+import 'package:weigh_master/Presentation/home/liked.dart';
 import 'package:weigh_master/Presentation/home/more.dart';
 import 'package:weigh_master/Presentation/home/myproducts.dart';
 import 'package:weigh_master/Presentation/home/rent.dart';
@@ -121,7 +122,10 @@ class _MyHomeDetailsState extends State<MyHomeDetails> {
                     IconButton(
                       icon: Image.asset('assets/like.png'),
                       iconSize: 50,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ViewLikedPage()));
+                      },
                     ),
                     const Text('   Liked \nProducts'),
                   ],

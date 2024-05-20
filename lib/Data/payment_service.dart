@@ -27,7 +27,8 @@ class PaymentController with ChangeNotifier {
       required String receiverName,
       required double amount}) async {
     print("object");
-    return _upiIndia.startTransaction(
+
+    final data = _upiIndia.startTransaction(
       app: app,
       receiverUpiId: receiverUpiId,
       receiverName: receiverName,
@@ -35,5 +36,7 @@ class PaymentController with ChangeNotifier {
       transactionNote: 'Not actual. Just an example.',
       amount: amount,
     );
+    notifyListeners();
+    return data;
   }
 }

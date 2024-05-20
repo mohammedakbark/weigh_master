@@ -50,8 +50,98 @@ class DBService with ChangeNotifier {
     notifyListeners();
   }
 
-  afterCompletPayment(BuyProductModel buyProductModel) {
+  Future afterCompletPayment(BuyProductModel buyProductModel) async {
     final doc = db.collection("My Orders").doc();
-    doc.set(buyProductModel.toJson(doc.id));
+    await doc.set(buyProductModel.toJson(doc.id));
+
+    // notifyListeners();
   }
+
+  removeFromCar() async {
+    final collection = await db
+        .collection("User Collection")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("Cart")
+        .get();
+    for (var i in collection.docs) {
+      _delete(i);
+    }
+  }
+
+  _delete(QueryDocumentSnapshot<Map<String, dynamic>> i) {
+    db
+        .collection("User Collection")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("Cart")
+        .doc(i.data()["id"])
+        .delete();
+  }
+
+  addToMyFav(ProductModel productModel) async {
+    db
+        .collection("User Collection")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("My Fav")
+        .doc(productModel.id)
+        .set(productModel.toHson(productModel.id));
+  }
+
+  removeFromMyFav(id, bool listen) async {
+    db
+        .collection("User Collection")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("My Fav")
+        .doc(id)
+        .delete();
+    if (listen == true) {
+      notifyListeners();
+    }
+  }
+
+  List<ProductModel> favList = [];
+  getMyAllFav() async {
+    final snapshot = await db
+        .collection("User Collection")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("My Fav")
+        .get();
+    // log("message");
+    // log(snapshot.docs.length.toString());
+    favList =
+        snapshot.docs.map((e) => ProductModel.fromJson(e.data())).toList();
+  }
+
+  Future<bool> checkIsFavOrNot(id) async {
+    final snapshot = await db
+        .collection("User Collection")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("My Fav")
+        .doc(id)
+        .get();
+    if (snapshot.exists) {
+      notifyListeners();
+      return true;
+    } else {
+      notifyListeners();
+      return false;
+    }
+  }
+
+  List<BuyProductModel> listOfBuy = [];
+  Future getMyBroughtProduct() async {
+    final snapshot = await db
+        .collection("My Orders")
+        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    // log(snapshot.docs.length.toString());
+    listOfBuy = snapshot.docs.map((e) {
+      return BuyProductModel.fromjson(e.data());
+    }).toList();
+    // snapshot.where("productModel",isEqualTo: )
+  }
+
+
+  // getDataFroHome(){
+  //   return db.collection(collectionPath)
+  // }
 }

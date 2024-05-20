@@ -1,4 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:weigh_master/Data/Model/buy_product_model.dart';
+import 'package:weigh_master/Data/Model/db_service.dart';
 
 import 'buy.dart';
 
@@ -31,8 +36,8 @@ class _MyProductsPageState extends State<MyProductsPage> {
             ),
             Expanded(
               child: selectedIndex == 0
-                  ? _buildProductList('Bought Products', _getBoughtProducts())
-                  : _buildProductList('Rented Products', _getRentedProducts()),
+                  ? _buildProductList('Bought Products', 0)
+                  : _buildProductList('Rented Products', 1),
             ),
           ],
         ),
@@ -64,25 +69,91 @@ class _MyProductsPageState extends State<MyProductsPage> {
     );
   }
 
-  Widget _buildProductList(String title, List<String> products) {
-    return ListView.builder(
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(products[index]),
-          trailing: const Icon(Icons.arrow_forward),
-          onTap: () {},
-        );
-      },
-    );
-  }
+  Widget _buildProductList(String title, int type) {
+    List<BuyProductModel> data = [];
+    return Consumer<DBService>(builder: (context, service, child) {
+      return FutureBuilder(
+          future: service.getMyBroughtProduct(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-  List<String> _getBoughtProducts() {
-    return ['Product 1', 'Product 2', 'Product 3'];
-    
-  }
+            if (type == 0) {
+              data = service.listOfBuy
+                  .where((element) => element.productModel.type == "Buy")
+                  .toList();
+            } else {
+              data = service.listOfBuy
+                  .where((element) => element.productModel.type == "Rent")
+                  .toList();
+            }
 
-  List<String> _getRentedProducts() {
-    return ['Rented Product 1', 'Rented Product 2', 'Rented Product 3'];
+            log(service.listOfBuy.length.toString());
+            return data.isEmpty
+                ? const Center(
+                    child: Text("No Products"),
+                  )
+                : ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                      height: 20,
+                    ),
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        color: const Color.fromARGB(14, 8, 126, 139),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 5.0, horizontal: 10.0),
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 100.0,
+                              height: 100.0,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                      data[index].productModel.image),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    data[index].productModel.name,
+                                    style: const TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  Text(
+                                    data[index].productModel.discription,
+                                    style: const TextStyle(
+                                        fontSize: 16.0, color: Colors.grey),
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  Text(
+                                    '\$ ${data[index].totalAmount.toString()}',
+                                    style: const TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+          });
+    });
   }
 }

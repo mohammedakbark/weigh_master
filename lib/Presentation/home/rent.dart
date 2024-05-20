@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/Model/product_model.dart';
 import 'package:weigh_master/Presentation/home/rentpage.dart';
 
 class Product {
@@ -118,14 +119,22 @@ class RentPage extends StatelessWidget {
                       child: ListView.builder(
                         itemCount: data.length,
                         itemBuilder: (context, index) {
-                          final product = products[index];
+                          // final product = products[index];
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        ProductRentPage(product: product)),
+                                    builder: (context) => ProductRentPage(
+                                        productModel: ProductModel(
+                                            discription: data[index]
+                                                ["discription"],
+                                            image: data[index]["image"],
+                                            name: data[index]["name"],
+                                            rate:
+                                                data[index]["rate"].toString(),
+                                            type: data[index]["type"],
+                                            id: data[index]["id"]))),
                               );
                             },
                             child: Container(

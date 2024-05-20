@@ -1,18 +1,23 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:weigh_master/Data/Model/cartmodel.dart';
 import 'package:weigh_master/Data/Model/product_model.dart';
+import 'package:weigh_master/Presentation/cart/payemt_4_cart.dart';
+import 'package:weigh_master/Presentation/cart/proceed_payment.dart';
 import 'package:weigh_master/Presentation/home/buy.dart';
 
 class CartPage extends StatelessWidget {
-  const CartPage({
+  CartPage({
     Key? key,
   }) : super(key: key);
-
+  List<CartModel> list = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
+      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
           stream: FirebaseFirestore.instance
               .collection("User Collection")
               .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -27,6 +32,13 @@ class CartPage extends StatelessWidget {
 
             if (snapshot.hasData) {
               final data = snapshot.data!.docs;
+
+              list = data.map((e) {
+                return CartModel.fromJson(e.data());
+              }).toList();
+
+              log(list.length.toString());
+
               return data.isEmpty
                   ? Center(
                       child: Text("Cart is empty"),
@@ -77,6 +89,11 @@ class CartPage extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
+                print(list.length);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ProceedPayemntForCart(
+                          cartModelList: list,
+                        )));
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text('Proceed to purchase'),
                 ));

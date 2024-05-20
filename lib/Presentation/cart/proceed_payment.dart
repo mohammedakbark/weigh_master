@@ -173,7 +173,8 @@ class ProceedpayemtPage extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => PaymentPage(
-                        productModel: productModel,
+                      fromCart: false,
+                        productModel: [productModel],
                         amount: double.parse(productModel.rate) * quantity)));
               },
               child: const Text("Proceed to Payment"))),

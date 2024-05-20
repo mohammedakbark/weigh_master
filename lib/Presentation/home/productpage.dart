@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:weigh_master/Data/Model/cartmodel.dart';
 import 'package:weigh_master/Data/Model/db_service.dart';
@@ -67,16 +69,43 @@ class _ProductBuyingPageState extends State<ProductBuyingPage> {
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(isLiked ? Icons.favorite : Icons.favorite_border),
-                  onPressed: () {
-                    setState(() {
-                      isLiked = !isLiked;
-                    });
-                    print(
-                        'Product ${widget.productModel.name} ${isLiked ? 'liked' : 'unliked'}');
-                  },
-                ),
+                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                    stream: FirebaseFirestore.instance
+                        .collection("User Collection")
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection("My Fav")
+                        .doc(widget.productModel.id)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data!.data() != null) {
+                          isLiked = true;
+                        } else {
+                          isLiked = false;
+                          log("oop");
+                        }
+                        return IconButton(
+                          icon: Icon(
+                              isLiked ? Icons.favorite : Icons.favorite_border),
+                          onPressed: () {
+                            if (snapshot.data!.data() != null) {
+                              DBService()
+                                  .removeFromMyFav(widget.productModel.id,false);
+                            } else {
+                              DBService().addToMyFav(widget.productModel);
+                            }
+
+                            // setState(() {
+                            //   isLiked = !isLiked;
+                            // });
+                            // print(
+                            //     'Product ${widget.productModel.name} ${isLiked ? 'liked' : 'unliked'}');
+                          },
+                        );
+                      } else {
+                        return SizedBox();
+                      }
+                    }),
               ],
             ),
             const SizedBox(height: 20.0),

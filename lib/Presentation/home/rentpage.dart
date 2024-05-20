@@ -1,10 +1,18 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/Model/product_model.dart';
+import 'package:weigh_master/Presentation/cart/payment.dart';
 import 'package:weigh_master/Presentation/home/rent.dart';
 
 class ProductRentPage extends StatefulWidget {
-  final Product product;
+  final ProductModel productModel;
 
-  const ProductRentPage({Key? key, required this.product}) : super(key: key);
+  const ProductRentPage({Key? key, required this.productModel})
+      : super(key: key);
 
   @override
   _ProductRentPageState createState() => _ProductRentPageState();
@@ -12,6 +20,7 @@ class ProductRentPage extends StatefulWidget {
 
 class _ProductRentPageState extends State<ProductRentPage> {
   int quantity = 1;
+  bool isLiked = false;
 
   void incrementQuantity() {
     setState(() {
@@ -44,23 +53,55 @@ class _ProductRentPageState extends State<ProductRentPage> {
                   aspectRatio: 18 / 13,
                   child: Container(
                     color: Colors.grey[300],
-                    child: Image.asset(
-                      widget.product.imageUrl,
+                    child: Image.network(
+                      widget.productModel.image,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.favorite),
-                  onPressed: () {
-                    print('Product liked');
-                  },
-                ),
+                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                    stream: FirebaseFirestore.instance
+                        .collection("User Collection")
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection("My Fav")
+                        .doc(widget.productModel.id)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data!.data() != null) {
+                          isLiked = true;
+                        } else {
+                          isLiked = false;
+                          log("oop");
+                        }
+
+                        return IconButton(
+                          icon: Icon(
+                              isLiked ? Icons.favorite : Icons.favorite_border),
+                          onPressed: () {
+                            if (snapshot.data!.data() != null) {
+                              DBService().removeFromMyFav(
+                                  widget.productModel.id, false);
+                            } else {
+                              DBService().addToMyFav(widget.productModel);
+                            }
+
+                            // setState(() {
+                            //   isLiked = !isLiked;
+                            // });
+                            // print(
+                            //     'Product ${widget.productModel.name} ${isLiked ? 'liked' : 'unliked'}');
+                          },
+                        );
+                      } else {
+                        return SizedBox();
+                      }
+                    })
               ],
             ),
             SizedBox(height: 20.0),
             Text(
-              widget.product.name,
+              widget.productModel.name,
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10.0),
@@ -71,7 +112,7 @@ class _ProductRentPageState extends State<ProductRentPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      '\$${widget.product.price.toStringAsFixed(2)}',
+                      '\$${double.parse(widget.productModel.rate).toStringAsFixed(2)}',
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
@@ -99,22 +140,17 @@ class _ProductRentPageState extends State<ProductRentPage> {
               ],
             ),
             SizedBox(height: 20.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    print('Product added to cart');
-                  },
-                  child: Text('Add to Cart'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    print('Product bought');
-                  },
-                  child: Text('Buy'),
-                ),
-              ],
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => PaymentPage(
+                        fromCart: false,
+                        productModel: [widget.productModel],
+                        amount: double.parse(widget.productModel.rate) *
+                            quantity)));
+                print('prodcutModel added to cart');
+              },
+              child: Text('Proceed for Rent'),
             ),
           ],
         ),

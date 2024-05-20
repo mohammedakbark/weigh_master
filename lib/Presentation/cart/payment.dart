@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:upi_india/upi_exception.dart';
@@ -9,13 +13,14 @@ import 'package:weigh_master/Data/payment_service.dart';
 import 'package:weigh_master/Logic/helper.dart';
 
 class PaymentPage extends StatefulWidget {
-  ProductModel productModel;
+  bool fromCart = false;
+  List<ProductModel> productModel;
   double amount;
-  PaymentPage({
-    super.key,
-    required this.productModel,
-    required this.amount,
-  });
+  PaymentPage(
+      {super.key,
+      required this.productModel,
+      required this.amount,
+      required this.fromCart});
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -83,7 +88,6 @@ class _PaymentPageState extends State<PaymentPage> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () {
-                      print("1");
                       PaymentController()
                           .initiateTransaction(context,
                               app: snapshot.data![index],
@@ -91,12 +95,36 @@ class _PaymentPageState extends State<PaymentPage> {
                               receiverName: "Weigh Master",
                               amount: widget.amount)
                           .then((value) async {
-                        DBService().afterCompletPayment(BuyProductModel(
-                            productModel: widget.productModel,
-                            totalAmount: widget.amount));
+                        for (var i in widget.productModel) {
+                          DBService().afterCompletPayment(BuyProductModel(
+                            uid: FirebaseAuth.instance.currentUser!.uid,
+                              productModel: i, totalAmount: widget.amount));
+                          if (widget.fromCart == true) {
+                            DBService().removeFromCar();
+                          }
+                        }
+
+                        log(value.toString());
                         return transaction = value as Future<UpiResponse>?;
+                      }).catchError((error) {
+                        for (var i in widget.productModel) {
+                          DBService()
+                              .afterCompletPayment(BuyProductModel(
+                                                            uid: FirebaseAuth.instance.currentUser!.uid,
+
+                                  productModel: i, totalAmount: widget.amount))
+                              .then((value) {
+                            if (widget.fromCart == true) {
+                              DBService().removeFromCar();
+                            }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("Order Successful")));
+                          });
+                        }
+                        log("Error");
                       });
-                      print("2");
+                      log("out");
                     },
                     leading: Image.memory(snapshot.data![index].icon),
                     title: Text(
@@ -153,7 +181,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     color: Colors.amber),
               );
             }),
-        SizedBox(
+        const SizedBox(
           height: 30,
         )
       ]),
