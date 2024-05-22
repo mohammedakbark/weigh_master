@@ -4,10 +4,16 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:weigh_master/Data/Model/buy_product_model.dart';
 import 'package:weigh_master/Data/Model/cartmodel.dart';
+import 'package:weigh_master/Data/Model/feedback_model.dart';
+import 'package:weigh_master/Data/Model/notification_model.dart';
 import 'package:weigh_master/Data/Model/product_model.dart';
+import 'package:weigh_master/Data/Model/service_model.dart';
 import 'package:weigh_master/Data/Model/user_model.dart';
+import 'package:weigh_master/Data/Model/warrenty_claim_model.dart';
+import 'package:weigh_master/Presentation/setting/feedback.dart';
 
 class DBService with ChangeNotifier {
   final db = FirebaseFirestore.instance;
@@ -53,7 +59,12 @@ class DBService with ChangeNotifier {
   Future afterCompletPayment(BuyProductModel buyProductModel) async {
     final doc = db.collection("My Orders").doc();
     await doc.set(buyProductModel.toJson(doc.id));
-
+    String date = DateFormat("dd/m/yyyy").format(DateTime.now());
+    addNotification(NotificationModel(
+        date: date,
+        notiMessage:
+            "Your request for ${buyProductModel.productModel.type} ${buyProductModel.productModel.name} is Done",
+        uid: FirebaseAuth.instance.currentUser!.uid));
     // notifyListeners();
   }
 
@@ -140,8 +151,85 @@ class DBService with ChangeNotifier {
     // snapshot.where("productModel",isEqualTo: )
   }
 
+  addFeedBack(FeedbackModel feedbackModel) async {
+    final docs = db.collection("Feedback").doc();
+    docs.set(feedbackModel.toJson(docs.id));
+  }
+
+  List<FeedbackModel> listOFFeedback = [];
+  Future getAllFeedBack() async {
+    Stream<QuerySnapshot> snapshot = db.collection("Feedback").snapshots();
+    // List<FeedbackModel> list = [];
+    return snapshot.listen((event) {
+      listOFFeedback = event.docs.map((doc) {
+        return FeedbackModel.fromjson(doc.data() as Map<String, dynamic>);
+      }).toList();
+      // notifyListeners();
+      // listOFFeedback = List.from(list);
+    });
+  }
+
+  Future addNewWarrenty(WarrentyClaimModel warrentyClaimModel, buyId) async {
+    await db.collection("Warrenty Claim").doc(buyId).set(
+        warrentyClaimModel.toJson(buyId, warrentyClaimModel.buymodel.buyId));
+    String date = DateFormat("dd/m/yyyy").format(DateTime.now());
+    addNotification(NotificationModel(
+        date: date,
+        notiMessage:
+            "Your request for registering warrenty for   ${warrentyClaimModel.buymodel.productModel.name} is Done",
+        uid: FirebaseAuth.instance.currentUser!.uid));
+  }
 
   // getDataFroHome(){
   //   return db.collection(collectionPath)
   // }
+  List<WarrentyClaimModel> currentUserWarrentyHistory = [];
+  Future getcurrentUserWarrentyHistory() async {
+    final snap = await db
+        .collection("Warrenty Claim")
+        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    log(snap.docs.length.toString());
+    currentUserWarrentyHistory =
+        snap.docs.map((e) => WarrentyClaimModel.fromjson(e.data())).toList();
+  }
+
+  Future addAppoinment(ServiceModel serviceModel, buyId) async {
+    await db
+        .collection("Service Appoinments")
+        .doc(buyId)
+        .set(serviceModel.toJson(buyId, serviceModel.buymodel.buyId));
+    String date = DateFormat("dd/m/yyyy").format(DateTime.now());
+    addNotification(NotificationModel(
+        date: date,
+        notiMessage:
+            "Your request for Service appoinmet on ${serviceModel.date.substring(0, 10)} is Done",
+        uid: FirebaseAuth.instance.currentUser!.uid));
+  }
+
+  List<ServiceModel> currentUserServiceHistory = [];
+  Future getcurrentUserServiceHistory() async {
+    final snap = await db
+        .collection("Service Appoinments")
+        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    log(snap.docs.length.toString());
+    currentUserServiceHistory =
+        snap.docs.map((e) => ServiceModel.fromjson(e.data())).toList();
+  }
+
+  addNotification(NotificationModel notificationModel) async {
+    final docs = db.collection("Notifications").doc();
+    docs.set(notificationModel.toJson(docs.id));
+  }
+
+  List<NotificationModel> notificationList = [];
+  getMyNotification() async {
+    final snapshot = await db
+        .collection("Notifications")
+        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    notificationList =
+        snapshot.docs.map((e) => NotificationModel.fromJson(e.data())).toList();
+  }
 }

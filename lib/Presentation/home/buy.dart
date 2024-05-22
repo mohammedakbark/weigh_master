@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/db_service.dart';
 import 'package:weigh_master/Data/Model/product_model.dart';
 import 'package:weigh_master/Presentation/home/productpage.dart';
 
@@ -143,6 +143,7 @@ class BuyPage extends StatelessWidget {
                                 MaterialPageRoute(
                                     builder: (context) => ProductBuyingPage(
                                         productModel: ProductModel(
+                                          warrentyDate: data[index]["warrentyDate"],
                                             discription: data[index]
                                                 ["discription"],
                                             image: data[index]["image"],

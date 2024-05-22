@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:weigh_master/Presentation/home/service/ourcenter.dart';
+import 'package:weigh_master/Presentation/home/warranty/warenty_claim.dart';
+import 'package:weigh_master/Presentation/home/warranty/warrenty_check.dart';
+import 'package:weigh_master/Presentation/home/warranty/warrenty_history.dart';
 import 'package:weigh_master/Presentation/setting/feedback.dart';
 
 class WarrantyPage extends StatelessWidget {
@@ -16,6 +20,8 @@ class WarrantyPage extends StatelessWidget {
               imagePath: 'assets/warranty_claim.png',
               text: 'Warranty Claim',
               onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => WarrentyClaimPage()));
               },
             ),
             SizedBox(height: 20),
@@ -23,6 +29,8 @@ class WarrantyPage extends StatelessWidget {
               imagePath: 'assets/warranty_check.png',
               text: 'Warranty Check',
               onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => WarrentyCheckPage()));
               },
             ),
             SizedBox(height: 20),
@@ -30,6 +38,8 @@ class WarrantyPage extends StatelessWidget {
               imagePath: 'assets/history.png',
               text: 'Warranty History',
               onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => WarrentyHistoryPage()));
               },
             ),
             SizedBox(height: 20),
@@ -37,6 +47,8 @@ class WarrantyPage extends StatelessWidget {
               imagePath: 'assets/Our center.png',
               text: 'Our Center',
               onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CenterPage()));
               },
             ),
             SizedBox(height: 20),

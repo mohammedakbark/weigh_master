@@ -6,6 +6,7 @@ import 'package:weigh_master/Presentation/home/buy.dart';
 import 'package:weigh_master/Presentation/home/liked.dart';
 import 'package:weigh_master/Presentation/home/more.dart';
 import 'package:weigh_master/Presentation/home/myproducts.dart';
+import 'package:weigh_master/Presentation/home/renewaldate.dart';
 import 'package:weigh_master/Presentation/home/rent.dart';
 import 'package:weigh_master/Presentation/home/service/service.dart';
 import 'package:weigh_master/Presentation/home/warranty/warranty.dart';
@@ -179,7 +180,13 @@ class _MyHomeDetailsState extends State<MyHomeDetails> {
                     IconButton(
                       icon: Image.asset('assets/renewaldate.png'),
                       iconSize: 50,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => RenewalDatePage(),
+                          ),
+                        );
+                      },
                     ),
                     const Text('Renewal \n   Date'),
                   ],

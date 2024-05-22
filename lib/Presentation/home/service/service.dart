@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weigh_master/Presentation/home/service/ourcenter.dart';
+import 'package:weigh_master/Presentation/home/service/service_appoinment.dart';
+import 'package:weigh_master/Presentation/home/service/service_history.dart';
 import 'package:weigh_master/Presentation/setting/feedback.dart';
 
 class ServicePage extends StatelessWidget {
@@ -18,13 +20,24 @@ class ServicePage extends StatelessWidget {
             ServiceButton(
               imagePath: 'assets/service_appointment.png',
               text: 'Service Appointment',
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ServiceAppoinmentPage()),
+                );
+              },
             ),
             const SizedBox(height: 20),
             ServiceButton(
               imagePath: 'assets/history.png',
               text: 'Service History',
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ServiceHstoryPage()),
+                );
+              },
             ),
             const SizedBox(height: 20),
             ServiceButton(
@@ -59,7 +72,8 @@ class ServiceButton extends StatelessWidget {
   final String imagePath;
   final String text;
   final VoidCallback onPressed;
-  const ServiceButton({super.key, 
+  const ServiceButton({
+    super.key,
     required this.imagePath,
     required this.text,
     required this.onPressed,

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weigh_master/Data/Model/buy_product_model.dart';
-import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/db_service.dart';
 
 import 'buy.dart';
 

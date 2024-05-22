@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/db_service.dart';
 import 'package:weigh_master/Data/Model/product_model.dart';
 import 'package:weigh_master/Presentation/cart/payment.dart';
 import 'package:weigh_master/Presentation/home/rent.dart';

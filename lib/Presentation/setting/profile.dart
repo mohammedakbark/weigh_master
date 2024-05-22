@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter/material.dart';
-import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/db_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

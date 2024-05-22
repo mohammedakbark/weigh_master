@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/db_service.dart';
 import 'package:weigh_master/Data/payment_service.dart';
 import 'package:weigh_master/Presentation/log_and_register/spalsh_screen.dart';
 import 'package:weigh_master/Presentation/log_and_register/login.dart';

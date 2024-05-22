@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:weigh_master/Data/Model/user_model.dart';
-import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/db_service.dart';
 import 'package:weigh_master/Presentation/home/myhome.dart';
 import 'package:weigh_master/Presentation/log_and_register/spalsh_screen.dart';
 

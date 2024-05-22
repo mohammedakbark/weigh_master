@@ -4,10 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:upi_india/upi_exception.dart';
 import 'package:upi_india/upi_response.dart';
 import 'package:weigh_master/Data/Model/buy_product_model.dart';
-import 'package:weigh_master/Data/Model/db_service.dart';
+import 'package:weigh_master/Data/db_service.dart';
 import 'package:weigh_master/Data/Model/product_model.dart';
 import 'package:weigh_master/Data/payment_service.dart';
 import 'package:weigh_master/Logic/helper.dart';
@@ -27,9 +28,14 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
+  final now = DateTime.now();
+  String date = DateFormat("dd/MM/yyyy").format(DateTime.now());
   Future<UpiResponse>? transaction;
   @override
   Widget build(BuildContext context) {
+    String dateAfter1Year = DateFormat("dd/MM/yyyy")
+        .format(DateTime(now.year + 1, now.month, now.day));
+
     setState(() {});
 
     return Scaffold(
@@ -97,8 +103,11 @@ class _PaymentPageState extends State<PaymentPage> {
                           .then((value) async {
                         for (var i in widget.productModel) {
                           DBService().afterCompletPayment(BuyProductModel(
-                            uid: FirebaseAuth.instance.currentUser!.uid,
-                              productModel: i, totalAmount: widget.amount));
+                              boughtDate: date,
+                              renewelDate: dateAfter1Year,
+                              uid: FirebaseAuth.instance.currentUser!.uid,
+                              productModel: i,
+                              totalAmount: widget.amount));
                           if (widget.fromCart == true) {
                             DBService().removeFromCar();
                           }
@@ -108,11 +117,15 @@ class _PaymentPageState extends State<PaymentPage> {
                         return transaction = value as Future<UpiResponse>?;
                       }).catchError((error) {
                         for (var i in widget.productModel) {
+                          // log(date);
+                          // log(message)
                           DBService()
                               .afterCompletPayment(BuyProductModel(
-                                                            uid: FirebaseAuth.instance.currentUser!.uid,
-
-                                  productModel: i, totalAmount: widget.amount))
+                                  boughtDate: date,
+                                  renewelDate: dateAfter1Year,
+                                  uid: FirebaseAuth.instance.currentUser!.uid,
+                                  productModel: i,
+                                  totalAmount: widget.amount))
                               .then((value) {
                             if (widget.fromCart == true) {
                               DBService().removeFromCar();
