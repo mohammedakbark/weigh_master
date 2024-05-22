@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:weigh_master/Logic/auth_service.dart';
 import 'package:weigh_master/Presentation/home/myproducts.dart';
+import 'package:weigh_master/Presentation/home/service/ourcenter.dart';
+import 'package:weigh_master/Presentation/home/warranty/warrenty_history.dart';
 import 'package:weigh_master/Presentation/message/notification.dart';
 import 'package:weigh_master/Presentation/setting/feedback.dart';
 import 'package:weigh_master/Presentation/setting/profile.dart';
@@ -20,16 +22,16 @@ class Setting extends StatelessWidget {
           }),
           _buildSectionTitle('Warranty & Service'),
           _buildListItem(Icons.assignment, 'View Warranty', () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => FeedbackPage()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WarrentyHistoryPage()),
+            );
           }),
           _buildListItem(Icons.settings, 'Service Center', () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => FeedbackPage()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CenterPage()),
+            );
           }),
           _buildSectionTitle('Notifications & Preferences'),
           _buildListItem(Icons.notifications, 'Notifications', () {
@@ -44,13 +46,13 @@ class Setting extends StatelessWidget {
               MaterialPageRoute(builder: (context) => MyProductsPage()),
             );
           }),
-          _buildListItem(Icons.history, 'My Activity', () {}),
-          _buildListItem(Icons.color_lens, 'Theme', () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => FeedbackPage()),
-            // );
-          }),
+          // _buildListItem(Icons.history, 'My Activity', () {}),
+          // _buildListItem(Icons.color_lens, 'Theme', () {
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => FeedbackPage()),
+          // );
+          // }),
           _buildSectionTitle('Support & Feedback'),
           _buildListItem(Icons.help, 'Support', () {
             // Navigator.push(

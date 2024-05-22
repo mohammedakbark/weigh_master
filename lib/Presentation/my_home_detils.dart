@@ -1,7 +1,12 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:weigh_master/Data/db_service.dart';
 import 'package:weigh_master/Presentation/home/buy.dart';
 import 'package:weigh_master/Presentation/home/liked.dart';
 import 'package:weigh_master/Presentation/home/more.dart';
@@ -27,32 +32,32 @@ class _MyHomeDetailsState extends State<MyHomeDetails> {
     'assets/offer3.jpg',
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _startAutoScroll();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _startAutoScroll();
+  // }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _pageController.dispose();
+  //   super.dispose();
+  // }
 
-  void _startAutoScroll() {
-    Timer.periodic(const Duration(seconds: 6), (timer) {
-      if (_currentPage < _imageUrls.length - 1) {
-        _currentPage++;
-      } else {
-        _currentPage = 0;
-      }
-      _pageController.animateToPage(
-        _currentPage,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
+  // void _startAutoScroll() {
+  //   Timer.periodic(const Duration(seconds: 6), (timer) {
+  //     if (_currentPage < _imageUrls.length - 1) {
+  //       _currentPage++;
+  //     } else {
+  //       _currentPage = 0;
+  //     }
+  //     _pageController.animateToPage(
+  //       _currentPage,
+  //       duration: const Duration(milliseconds: 500),
+  //       curve: Curves.easeInOut,
+  //     );
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -60,23 +65,67 @@ class _MyHomeDetailsState extends State<MyHomeDetails> {
       child: Column(
         children: [
           SizedBox(
+            width: double.infinity,
             height: 200,
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: _imageUrls.length,
-              itemBuilder: (context, index) {
-                return Image.asset(
-                  _imageUrls[index],
-                  fit: BoxFit.fill,
-                );
-              },
-              onPageChanged: (int page) {
-                setState(() {
-                  _currentPage = page;
-                });
-              },
-            ),
-          ),
+            child: CarouselSlider(
+                items: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Image.asset(
+                      _imageUrls[0],
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Image.asset(
+                      _imageUrls[1],
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Image.asset(
+                      _imageUrls[2],
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ],
+                options: CarouselOptions(
+                  // height: 400,
+                  // aspectRatio: 16 / 9,
+                  // viewportFraction: 0.8,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: true,
+                  autoPlayInterval: Duration(seconds: 3),
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enlargeCenterPage: true,
+                  enlargeFactor: 0.3,
+                  // onPageChanged: callbackFunction,
+                  scrollDirection: Axis.horizontal,
+                )),
+          ) // SizedBox(
+          //   height: 200,
+          //   child: PageView.builder(
+          //     controller: _pageController,
+          //     itemCount: _imageUrls.length,
+          //     itemBuilder: (context, index) {
+          //       return Image.asset(
+          //         _imageUrls[index],
+          //         fit: BoxFit.fill,
+          //       );
+          //     },
+          //     onPageChanged: (int page) {
+          //       setState(() {
+          //         _currentPage = page;
+          //       });
+          //     },
+          //   ),
+          // ),,
+          ,
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -125,7 +174,7 @@ class _MyHomeDetailsState extends State<MyHomeDetails> {
                       iconSize: 50,
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ViewLikedPage()));
+                            builder: (context) => const ViewLikedPage()));
                       },
                     ),
                     const Text('   Liked \nProducts'),
@@ -183,7 +232,7 @@ class _MyHomeDetailsState extends State<MyHomeDetails> {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => RenewalDatePage(),
+                            builder: (context) => const RenewalDatePage(),
                           ),
                         );
                       },
@@ -233,115 +282,126 @@ class _MyHomeDetailsState extends State<MyHomeDetails> {
             ],
           ),
           const SizedBox(height: 20),
-          Center(
-            child: Container(
-              color: const Color.fromARGB(255, 235, 202, 202),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            width: 200,
-                            height: 93,
-                            color: Colors.orange,
-                            child: const Center(
-                              child: Text(
-                                '14 Warranty',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
+          Consumer<DBService>(builder: (context, servicer, child) {
+            return FutureBuilder(
+                future: servicer.getDataForHomeDisplay(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return Center(
+                    child: Container(
+                      color: const Color.fromARGB(255, 235, 202, 202),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            width: 200,
-                            height: 63,
-                            color: Colors.orange,
-                            child: const Center(
-                              child: Text(
-                                '3 Service',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            width: 200,
-                            height: 90,
-                            color: Colors.orange,
-                            child: const Center(
-                              child: Text(
-                                '20 My products',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Row(
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                width: 100,
-                                height: 63,
-                                color: Colors.orange,
-                                child: const Center(
-                                  child: Text(
-                                    '15 Buyed',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                              Column(
+                                children: [
+                                  Container(
+                                    width: 200,
+                                    height: 93,
+                                    color: Colors.orange,
+                                    child: Center(
+                                      child: Text(
+                                        '${servicer.warrentyCount} Warranty',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Container(
+                                    width: 200,
+                                    height: 63,
+                                    color: Colors.orange,
+                                    child: Center(
+                                      child: Text(
+                                        '${servicer.serviceitem} Service',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Container(
-                                width: 100,
-                                height: 63,
-                                color: Colors.orange,
-                                child: const Center(
-                                  child: Text(
-                                    '5 Rented',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                              Column(
+                                children: [
+                                  Container(
+                                    width: 200,
+                                    height: 90,
+                                    color: Colors.orange,
+                                    child: Center(
+                                      child: Text(
+                                        '${servicer.totalProduct} My products',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 100,
+                                        height: 63,
+                                        color: Colors.orange,
+                                        child: Center(
+                                          child: Text(
+                                            '${servicer.buyed} Buyed',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 100,
+                                        height: 63,
+                                        color: Colors.orange,
+                                        child: Center(
+                                          child: Text(
+                                            '${servicer.rented} Rented',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+                    ),
+                  );
+                });
+          }),
         ],
       ),
     );

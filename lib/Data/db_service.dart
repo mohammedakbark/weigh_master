@@ -232,4 +232,47 @@ class DBService with ChangeNotifier {
     notificationList =
         snapshot.docs.map((e) => NotificationModel.fromJson(e.data())).toList();
   }
+
+  int warrentyCount = 0;
+  int totalProduct = 0;
+  int buyed = 0;
+  int rented = 0;
+  int serviceitem = 0;
+  getDataForHomeDisplay() async {
+    //  total profuct count
+    final productSnapshot = await db.collection("Product Data").get();
+    totalProduct = productSnapshot.docs.length;
+
+    // totsl buy and rent count
+    final myorderSnapshot = await db
+        .collection("My Orders")
+        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    //buy
+    buyed = 0;
+    rented = 0;
+    for (var i in myorderSnapshot.docs) {
+      if (i["productModel"]["type"] == "Buy") {
+        // Buy
+        buyed++;
+      } else {
+        //REnt
+        rented++;
+      }
+    }
+
+    // total Services
+    final serviceSnapshot = await db
+        .collection("Service Appoinments")
+        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    serviceitem = serviceSnapshot.docs.length;
+
+    //  warrenty
+    final warrentySnapshot = await db
+        .collection("Warrenty Claim")
+        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    warrentyCount = warrentySnapshot.docs.length;
+  }
 }
