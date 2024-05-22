@@ -40,13 +40,11 @@ class _NotificationnState extends State<Notificationn> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width * .6,
+                                Flexible(
                                   child: Text(
-                                    maxLines: 1,
+                                    // maxLines: 1,
                                     data[index].notiMessage,
-                                    overflow: TextOverflow.ellipsis,
+                                    // overflow: TextOverflow.ellipsis,
                                     style:
                                         TextStyle(fontWeight: FontWeight.w700),
                                   ),
